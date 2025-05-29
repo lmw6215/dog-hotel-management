@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강아지 호텔 관리 시스템 - 클라우드 버전</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-section input {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-section input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .dog-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dog-list h2 {
+            color: #2d3436;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .dog-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .dog-table th {
+            background: linear-gradient(135deg, #636e72, #2d3436);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .dog-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e1e8ed;
+            transition: background-color 0.3s ease;
+        }
+
+        .dog-table tr:hover {
+            background-color: #f1f3f4;
+        }
+
+        .dog-table tr.selected {
+            background-color: #e3f2fd;
+        }
+
+        .button-section {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .status-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .time-display {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .connection-status {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .connection-status.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .input-section input {
+                min-width: 100%;
+            }
+            
+            .button-section {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .dog-table {
+                font-size: 14px;
+            }
+            
+            .dog-table th,
+            .dog-table td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐕 강아지 호텔 관리 시스템</h1>
+            <p>클라우드 기반 - 모든 기기에서 데이터 공유</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 연결 상태 -->
+            <div class="connection-status" id="connectionStatus">
+                🔗 Google Sheets와 연결됨 - 모든 데이터가 실시간 동기화됩니다
+            </div>
+
+            <div class="time-display" id="currentTime"></div>
+            
+            <div class="status-card">
+                <h3 id="dogCount">0</h3>
+                <p>현재 이용중인 강아지</p>
+            </div>
+
+            <div class="input-section">
+                <input type="text" id="dogNameInput" placeholder="강아지 이름을 입력하세요" maxlength="20">
+                <button class="btn btn-primary" onclick="enterDog()">🏠 입실</button>
+                <button class="btn btn-info" onclick="loadData()">🔄 새로고침</button>
+            </div>
+
+            <div class="dog-list">
+                <h2>📋 현재 이용중인 강아지 목록</h2>
+                <table class="dog-table" id="dogTable">
+                    <thead>
+                        <tr>
+                            <th>강아지 이름</th>
+                            <th>입실 시간</th>
+                            <th>이용 시간</th>
+                            <th>양치 횟수</th>
+                            <th>산책 횟수</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dogTableBody">
+                        <!-- 강아지 목록이 여기에 표시됩니다 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-section">
+                <button class="btn btn-danger" onclick="exitDog()">🚪 퇴실</button>
+                <button class="btn btn-warning" onclick="editEntryTime()">⏰ 시간 수정</button>
+                <button class="btn btn-success" onclick="addBrushing()">🦷 양치 추가</button>
+                <button class="btn btn-success" onclick="addWalking()">🚶 산책 추가</button>
+                <button class="btn btn-info" onclick="showRecords()">📊 기록 보기</button>
+                <button class="btn btn-warning" onclick="removeBrushing()">➖ 양치 삭제</button>
+                <button class="btn btn-warning" onclick="removeWalking()">➖ 산책 삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달들 -->
+    <div id="exitModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('exitModal')">&times;</span>
+            <h2>🚪 퇴실 확인</h2>
+            <div id="exitDetails"></div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="btn btn-danger" onclick="confirmExit()">확인</button>
+                <button class="btn" onclick="closeModal('exitModal')" style="margin-left: 10px;">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="recordsModal" class="modal">
+        <div class="modal-content" style="max-width: 90%; width: 1000px;">
+            <span class="close" onclick="closeModal('recordsModal')">&times;</span>
+            <h2>📊 이용 기록</h2>
+            <div id="recordsContent"></div>
+        </div>
+    </div>
+
+    <div id="editTimeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editTimeModal')">&times;</span>
+            <h2>⏰ 입실 시간 수정</h2>
+            <div style="margin: 20px 0;">
+                <label>날짜:</label><br>
+                <input type="date" id="editDate" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            <div style="margin: 20px 0;">
+                <label>시간:</label><br>
+                <input type="time" id="editTime" step="1" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="saveNewTime()">저장</button>
+                <button class="btn" onclick="closeModal('editTimeModal')" style="margin-left: 10px;">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수 - 실제 Google Sheets와 Apps Script 정보 적용
+        const SHEET_ID = '1f6V9d7Ns1IJJZGsDPzdWMgQmkkEoZwNCL2lbr1wBNu0';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsGokWNilttk3A_rW7SX_F45_X3wApfhbOaqrdX-74YomPBYGlRVNLgk_G5vB0s1yE/exec';
+        
+        let dogList = [];
+        let dogRecords = [];
+        let selectedDogId = null;
+
+        // 연결 상태 업데이트
+        function updateConnectionStatus(isConnected, message) {
+            const statusDiv = document.getElementById('connectionStatus');
+            if (isConnected) {
+                statusDiv.className = 'connection-status';
+                statusDiv.innerHTML = `🔗 ${message || 'Google Sheets와 연결됨 - 모든 데이터가 실시간 동기화됩니다'}`;
+            } else {
+                statusDiv.className = 'connection-status error';
+                statusDiv.innerHTML = `❌ ${message || '연결 오류 - 인터넷 연결을 확인하세요'}`;
+            }
+        }
+
+        // 시간 업데이트
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = `현재 시간: ${timeString}`;
+        }
+
+        // UUID 생성
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // 이용 시간 계산
+        function calculateElapsedTime(entryTime) {
+            const entry = new Date(entryTime);
+            const now = new Date();
+            const diff = now - entry;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${days}일 ${hours}시간 ${minutes}분`;
+        }
+
+        // 요금 계산
+        function calculateFee(entryTime, exitTime, brushingCount, walkingCount) {
+            const entry = new Date(entryTime);
+            const exit = new Date(exitTime);
+            
+            const entryDate = new Date(entry.getFullYear(), entry.getMonth(), entry.getDate());
+            const exitDate = new Date(exit.getFullYear(), exit.getMonth(), exit.getDate());
+            const totalDays = Math.floor((exitDate - entryDate) / (1000 * 60 * 60 * 24));
+            
+            const overnightFee = totalDays * 35000;
+            
+            const remainingTime = exit - (new Date(entry.getTime() + totalDays * 24 * 60 * 60 * 1000));
+            const totalMinutes = remainingTime / (1000 * 60);
+            
+            let daycareeFee = 0;
+            if (totalMinutes > 20) {
+                const adjustedMinutes = totalMinutes - 20;
+                const totalHours = Math.ceil(adjustedMinutes / 60);
+                daycareeFee = Math.min(30000, totalHours * 4000);
+            }
+            
+            const brushingFee = brushingCount * 2000;
+            const walkingFee = walkingCount * 10000;
+            
+            const totalFee = overnightFee + daycareeFee + brushingFee + walkingFee;
+            
+            return {
+                overnightFee: overnightFee + brushingFee + walkingFee,
+                daycareeFee: daycareeFee,
+                totalFee: totalFee
+            };
+        }
+
+        // 데이터 로드 (Google Sheets에서)
+        async function loadData() {
+            try {
+                updateConnectionStatus(true, '데이터 로딩 중...');
+                
+                const response = await fetch(`${SCRIPT_URL}?action=getCurrentDogs&sheetId=${SHEET_ID}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP 오류: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                if (data.dogs && Array.isArray(data.dogs)) {
+                    // 헤더 행 제외하고 실제 데이터만 처리
+                    dogList = data.dogs
+                        .filter(dog => dog.ID && dog.ID !== 'ID') // 헤더 행 제외
+                        .map(dog => ({
+                            id: dog.ID,
+                            name: dog.이름 || dog.name,
+                            entryTime: dog.입실시간 || dog.entryTime,
+                            brushing: parseInt(dog.양치횟수 || dog.brushing || 0),
+                            walking: parseInt(dog.산책횟수 || dog.walking || 0)
+                        }));
+                    
+                    updateDogTable();
+                    updateDogCount();
+                    updateConnectionStatus(true, `데이터 로드 완료 - ${dogList.length}마리 강아지 정보`);
+                } else {
+                    dogList = [];
+                    updateDogTable();
+                    updateDogCount();
+                    updateConnectionStatus(true, '데이터 로드 완료 - 등록된 강아지 없음');
+                }
+                
+                // 기록도 함께 로드
+                await loadRecords();
+                
+            } catch (error) {
+                console.error('데이터 로드 실패:', error);
+                updateConnectionStatus(false, `데이터 로드 실패: ${error.message}`);
+            }
+        }
+
+        // 기록 로드
+        async function loadRecords() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getRecords&sheetId=${SHEET_ID}`);
+                const data = await response.json();
+                
+                if (data.records && Array.isArray(data.records)) {
+                    dogRecords = data.records
+                        .filter(record => record.ID && record.ID !== 'ID') // 헤더 행 제외
+                        .map(record => ({
+                            id: record.ID,
+                            name: record.이름 || record.name,
+                            entryTime: record.입실시간 || record.entryTime,
+                            exitTime: record.퇴실시간 || record.exitTime,
+                            totalTime: record.총이용시간 || record.totalTime,
+                            brushing: parseInt(record.양치횟수 || record.brushing || 0),
+                            walking: parseInt(record.산책횟수 || record.walking || 0),
+                            fee: parseInt(record.이용요금 || record.fee || 0)
+                        }));
+                }
+            } catch (error) {
+                console.error('기록 로드 실패:', error);
+            }
+        }
+
+        // 강아지 입실
+        async function enterDog() {
+            const dogName = document.getElementById('dogNameInput').value.trim();
+            if (!dogName) {
+                alert('강아지 이름을 입력하세요.');
+                return;
+            }
+
+            const dog = {
+                id: generateUUID(),
+                name: dogName,
+                entryTime: new Date().toISOString(),
+                brushing: 0,
+                walking: 0
+            };
+
+            try {
+                // Google Sheets에 저장
+                await saveDogToSheet(dog);
+                
+                // 로컬 목록에 추가
+                dogList.push(dog);
+                
+                document.getElementById('dogNameInput').value = '';
+                updateDogTable();
+                updateDogCount();
+                updateConnectionStatus(true, `${dogName} 입실 완료`);
+                
+            } catch (error) {
+                console.error('입실 처리 실패:', error);
+                updateConnectionStatus(false, `입실 처리 실패: ${error.message}`);
+            }
+        }
+
+        // Google Sheets에 강아지 데이터 저장
+        async function saveDogToSheet(dog) {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'addDog',
+                    sheetId: SHEET_ID,
+                    id: dog.id,
+                    name: dog.name,
+                    entryTime: dog.entryTime,
+                    brushing: dog.brushing,
+                    walking: dog.walking
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP 오류: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            return result;
+        }
+
+        // 강아지 목록 업데이트
+        function updateDogTable() {
+            const tbody = document.getElementById('dogTableBody');
+            tbody.innerHTML = '';
+
+            if (dogList.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" style="text-align: center; color: #666;">등록된 강아지가 없습니다</td>';
+                tbody.appendChild(row);
+                return;
+            }
+
+            dogList.forEach(dog => {
+                const row = document.createElement('tr');
+                row.onclick = () => selectDog(dog.id, row);
+                
+                const entryTime = new Date(dog.entryTime);
+                const elapsedTime = calculateElapsedTime(dog.entryTime);
+                
+                row.innerHTML = `
+                    <td>${dog.name}</td>
+                    <td>${entryTime.toLocaleString('ko-KR')}</td>
+                    <td>${elapsedTime}</td>
+                    <td>${dog.brushing}회</td>
+                    <td>${dog.walking}회</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // 강아지 선택
+        function selectDog(dogId, row) {
+            document.querySelectorAll('.dog-table tr').forEach(tr => {
+                tr.classList.remove('selected');
+            });
+            
+            row.classList.add('selected');
+            selectedDogId = dogId;
+        }
+
+        // 선택된 강아지 찾기
+        function findSelectedDog() {
+            return dogList.find(dog => dog.id === selectedDogId);
+        }
+
+        // 강아지 퇴실
+        function exitDog() {
+            const dog = findSelectedDog();
+            if (!dog) {
+                alert('퇴실할 강아지를 선택하세요.');
+                return;
+            }
+
+            const exitTime = new Date();
+            const elapsedTime = calculateElapsedTime(dog.entryTime);
+            const fees = calculateFee(dog.entryTime, exitTime.toISOString(), dog.brushing, dog.walking);
+
+            document.getElementById('exitDetails').innerHTML = `
+                <p><strong>강아지 이름:</strong> ${dog.name}</p>
+                <p><strong>총 이용시간:</strong> ${elapsedTime}</p>
+                <p><strong>양치 횟수:</strong> ${dog.brushing}회</p>
+                <p><strong>산책 횟수:</strong> ${dog.walking}회</p>
+                <br>
+                <p><strong>기본 요금:</strong> ${fees.overnightFee.toLocaleString()}원</p>
+                <p><strong>추가 요금:</strong> ${fees.daycareeFee.toLocaleString()}원</p>
+                <br>
+                <p style="font-size: 1.2em; color: #e74c3c;"><strong>총 이용 요금: ${fees.totalFee.toLocaleString()}원</strong></p>
+            `;
+
+            document.getElementById('exitModal').style.display = 'block';
+        }
+
+        // 퇴실 확인
+        async function confirmExit() {
+            const dog = findSelectedDog();
+            const exitTime = new Date();
+            const elapsedTime = calculateElapsedTime(dog.entryTime);
+            const fees = calculateFee(dog.entryTime, exitTime.toISOString(), dog.brushing, dog.walking);
+
+            const record = {
+                id: dog.id,
+                name: dog.name,
+                entryTime: dog.entryTime,
+                exitTime: exitTime.toISOString(),
+                totalTime: elapsedTime,
+                brushing: dog.brushing,
+                walking: dog.walking,
+                fee: fees.totalFee
+            };
+
+            try {
+                // Google Sheets에 기록 저장
+                await saveRecordToSheet(record);
+                
+                // 현재 목록에서 제거 (Google Sheets에서도 제거)
+                await removeDogFromSheet(dog.id);
+                
+                // 로컬 데이터 업데이트
+                dogRecords.push(record);
+                dogList = dogList.filter(d => d.id !== dog.id);
+                selectedDogId = null;
+
+                updateDogTable();
+                updateDogCount();
+                closeModal('exitModal');
+                updateConnectionStatus(true, `${dog.name} 퇴실 완료`);
+                
+            } catch (error) {
+                console.error('퇴실 처리 실패:', error);
+                updateConnectionStatus(false, `퇴실 처리 실패: ${error.message}`);
+            }
+        }
+
+        // 기록을 Google Sheets에 저장
+        async function saveRecordToSheet(record) {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'addRecord',
+                    sheetId: SHEET_ID,
+                    id: record.id,
+                    name: record.name,
+                    entryTime: record.entryTime,
+                    exitTime: record.exitTime,
+                    totalTime: record.totalTime,
+                    brushing: record.brushing,
+                    walking: record.walking,
+                    fee: record.fee
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP 오류: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            return result;
+        }
+
+        // Google Sheets에서 강아지 제거
+        async function removeDogFromSheet(dogId) {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'removeDog',
+                    sheetId: SHEET_ID,
+                    id: dogId
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP 오류: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            return result;
+        }
+
+        // 양치 추가
+        async function addBrushing() {
+            const dog = findSelectedDog();
+            if (!dog) {
+                alert('양치를 추가할 강아지를 선택하세요.');
+                return;
+            }
+            
+            try {
+                dog.brushing++;
+                await updateDogInSheet(dog);
+                updateDogTable();
+                updateConnectionStatus(true, `${dog.name} 양치 횟수 증가`);
+            } catch (error) {
+                console.error('양치 추가 실패:', error);
+                dog.brushing--; // 롤백
+                updateConnectionStatus(false, `양치 추가 실패: ${error.message}`);
+            }
+        }
+
+        // 산책 추가
+        async function addWalking() {
+            const dog = findSelectedDog();
+            if (!dog) {
+                alert('산책을 추가할 강아지를 선택하세요.');
+                return;
+            }
+            
+            try {
+                dog.walking++;
+                await updateDogInSheet(dog);
+                updateDogTable();
+                updateConnectionStatus(true, `${dog.name} 산책 횟수 증가`);
+            } catch (error) {
+                console.error('산책 추가 실패:', error);
+                dog.walking--; // 롤백
+                updateConnectionStatus(false, `산책 추가 실패: ${error.message}`);
+            }
+        }
+
+        // Google Sheets에서 강아지 정보 업데이트
+        async function updateDogInSheet(dog) {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'updateDog',
+                    sheetId: SHEET_ID,
+                    id: dog.id,
+                    brushing: dog.brushing,
+                    walking: dog.walking
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP 오류: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            return result;
+        }
+
+        // 양치 삭제
+        async function removeBrushing() {
+            const dog = findSelectedDog();
+            if (!dog) {
+                alert('양치를 삭제할 강아지를 선택하세요.');
+                return;
+            }
+            if (dog.brushing <= 0) {
+                alert('양치 횟수가 0회입니다.');
+                return;
+            }
+            
+            try {
+                dog.brushing--;
+                await updateDogInSheet(dog);
+                updateDogTable();
+                updateConnectionStatus(true, `${dog.name} 양치 횟수 감소`);
+            } catch (error) {
+                console.error('양치 삭제 실패:', error);
+                dog.brushing++; // 롤백
+                updateConnectionStatus(false, `양치 삭제 실패: ${error.message}`);
+            }
+        }
+
+        // 산책 삭제
+        async function removeWalking() {
+            const dog = findSelectedDog();
+            if (!dog) {
+                alert('산책을 삭제할 강아지를 선택하세요.');
+                return;
+            }
+            if (dog.walking <= 0) {
+                alert('산책 횟수가 0회입니다.');
+                return;
+            }
+            
+            try {
+                dog.walking--;
+                await updateDogInSheet(dog);
+                updateDogTable();
+                updateConnectionStatus(true, `${dog.name} 산책 횟수 감소`);
+            } catch (error) {
+                console.error('산책 삭제 실패:', error);
+                dog.walking++; // 롤백
+                updateConnectionStatus(false, `산책 삭제 실패: ${error.message}`);
+            }
+        }
+
+        // 입실 시간 수정
+        function editEntryTime() {
+            const dog = findSelectedDog();
+            if (!dog) {
+                alert('수정할 강아지를 선택하세요.');
+                return;
+            }
+
+            const entryTime = new Date(dog.entryTime);
+            document.getElementById('editDate').value = entryTime.toISOString().split('T')[0];
+            document.getElementById('editTime').value = entryTime.toTimeString().split(' ')[0];
+
+            document.getElementById('editTimeModal').style.display = 'block';
+        }
+
+        // 새로운 시간 저장
+        async function saveNewTime() {
+            const dog = findSelectedDog();
+            const newDate = document.getElementById('editDate').value;
+            const newTime = document.getElementById('editTime').value;
+            
+            if (!newDate || !newTime) {
+                alert('날짜와 시간을 모두 입력하세요.');
+                return;
+            }
+            
+            const originalTime = dog.entryTime;
+            const newDateTime = new Date(`${newDate}T${newTime}`);
+            dog.entryTime = newDateTime.toISOString();
+            
+            try {
+                await updateDogEntryTimeInSheet(dog);
+                updateDogTable();
+                closeModal('editTimeModal');
+                updateConnectionStatus(true, `${dog.name} 입실 시간 수정 완료`);
+            } catch (error) {
+                console.error('시간 수정 실패:', error);
+                dog.entryTime = originalTime; // 롤백
+                updateConnectionStatus(false, `시간 수정 실패: ${error.message}`);
+            }
+        }
+
+        // Google Sheets에서 입실 시간 업데이트
+        async function updateDogEntryTimeInSheet(dog) {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'updateDogEntryTime',
+                    sheetId: SHEET_ID,
+                    id: dog.id,
+                    entryTime: dog.entryTime
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP 오류: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            return result;
+        }
+
+        // 기록 보기
+        function showRecords() {
+            let recordsHtml = '<table class="dog-table"><thead><tr><th>강아지 이름</th><th>입실 시간</th><th>퇴실 시간</th><th>총 이용시간</th><th>양치</th><th>산책</th><th>이용 요금</th></tr></thead><tbody>';
+            
+            dogRecords.forEach(record => {
+                const entryTime = new Date(record.entryTime);
+                const exitTime = new Date(record.exitTime);
+                recordsHtml += `
+                    <tr>
+                        <td>${record.name}</td>
+                        <td>${entryTime.toLocaleString('ko-KR')}</td>
+                        <td>${exitTime.toLocaleString('ko-KR')}</td>
+                        <td>${record.totalTime}</td>
+                        <td>${record.brushing}회</td>
+                        <td>${record.walking}회</td>
+                        <td>${record.fee.toLocaleString()}원</td>
+                    </tr>
+                `;
+            });
+            
+            recordsHtml += '</tbody></table>';
+            
+            if (dogRecords.length === 0) {
+                recordsHtml = '<p style="text-align: center; padding: 20px;">아직 기록이 없습니다.</p>';
+            } else {
+                // 총 매출 계산
+                const totalRevenue = dogRecords.reduce((sum, record) => sum + (record.fee || 0), 0);
+                recordsHtml = `
+                    <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #e8f5e8; border-radius: 10px;">
+                        <h3 style="color: #2d5a27; margin: 0;">총 매출: ${totalRevenue.toLocaleString()}원</h3>
+                        <p style="color: #2d5a27; margin: 5px 0 0 0;">총 ${dogRecords.length}건의 이용 기록</p>
+                    </div>
+                    ${recordsHtml}
+                `;
+            }
+            
+            document.getElementById('recordsContent').innerHTML = recordsHtml;
+            document.getElementById('recordsModal').style.display = 'block';
+        }
+
+        // 모달 닫기
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 강아지 수 업데이트
+        function updateDogCount() {
+            document.getElementById('dogCount').textContent = dogList.length;
+        }
+
+        // Enter 키 이벤트
+        document.getElementById('dogNameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                enterDog();
+            }
+        });
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // 자동 새로고침 (30초마다)
+        setInterval(() => {
+            loadData();
+        }, 30000);
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', function() {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            loadData(); // 초기 데이터 로드
+            updateConnectionStatus(true, '시스템 초기화 완료');
+        });
+
+        // 페이지를 떠날 때 확인
+        window.addEventListener('beforeunload', function(e) {
+            if (dogList.length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
